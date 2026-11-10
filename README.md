@@ -4,7 +4,8 @@ A **semantic-release** plugin for managing custom apps in **Kandji**, allowing y
 
 ## Features
 - Upload assets (e.g., binaries, zip files) to Kandji custom apps.
-- Update the `postinstall_script` of a custom app if provided.
+- Update the post-install script of a custom app if provided
+  (`postinstallScript` option).
 - Supports both pre-releases and full releases, configurable via plugin options.
 
 ## Requirements
@@ -14,10 +15,24 @@ A **semantic-release** plugin for managing custom apps in **Kandji**, allowing y
   - `KANDJI_API_TOKEN`: The API token for authenticating with Kandji.
 
 ## Installation
-Install the plugin from npm:
+The plugin is published to **GitHub Packages** as
+`@grid-x/semantic-release-kandji`. Add an `.npmrc` to your project so the
+`@grid-x` scope resolves from GitHub Packages:
+
+```ini
+@grid-x:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+npm expands `${GITHUB_TOKEN}` from the environment at install time, so no
+secret is stored in the file. GitHub Packages requires authentication even for
+public packages: `GITHUB_TOKEN` must be a classic personal access token with
+the `read:packages` scope.
+
+Then install the plugin:
 
 ```bash
-npm install --save-dev @siredmar/semantic-release-kandji
+npm install --save-dev @grid-x/semantic-release-kandji
 ```
 
 ## Configuration
@@ -28,13 +43,13 @@ Add the plugin to your `.releaserc.json` file with the required options:
   "branches": ["main"],
   "plugins": [
     [
-      "@siredmar/semantic-release-kandji",
+      "@grid-x/semantic-release-kandji",
       {
         "appID": "myappid",
         "asset": "/path/to/asset.zip",
         "preRelease": true,
         "release": true,
-        "postinstall_script": [
+        "postinstallScript": [
           "#!/bin/bash",
           "cp /usr/local/bin/myconf.conf $HOME/.myapp/myconf.conf"
         ]
@@ -51,7 +66,7 @@ Add the plugin to your `.releaserc.json` file with the required options:
 | `asset`              | `string`   | Yes      | The path to the asset file to upload.                                      |
 | `preRelease`         | `boolean`  | No       | Indicates whether the plugin should run on pre-releases. Default: `false`. |
 | `release`            | `boolean`  | No       | Indicates whether the plugin should run on full releases. Default: `true`. |
-| `postinstall_script` | `string[]` | No       | An optional post-install script to add to the custom app configuration.    |
+| `postinstallScript`  | `string[]` | No       | An optional post-install script to add to the custom app configuration.    |
 
 ## Usage
 When semantic-release runs, the plugin will:
@@ -96,7 +111,7 @@ You can run the plugin locally with a simulated context:
     asset: "/path/to/asset.zip",
     preRelease: false,
     release: true,
-    postinstall_script: [
+    postinstallScript: [
       "#!/bin/bash",
       "cp /usr/local/bin/myconf.conf $HOME/.myapp/myconf.conf"
     ]
